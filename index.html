@@ -421,11 +421,17 @@ async function doSubmit(){
 
   var ok=false;
   try{
-    // Use FormData for Formspree free plan compatibility
-    var fd=new FormData();
-    Object.keys(payload).forEach(function(k){fd.append(k,payload[k]);});
-    var r=await fetch('https://formspree.io/f/xgoqwrja',{method:'POST',headers:{'Accept':'application/json'},body:fd});
-    ok=r.ok;
+    // Web3Forms - works from any domain, no restrictions
+    payload['access_key']='c8825401-e262-44b8-86e3-661bbb3655d9';
+    payload['subject']='[Mirror Index] Assessment Submitted';
+    payload['from_name']='Mirror Index';
+    var r=await fetch('https://api.web3forms.com/submit',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    var json=await r.json();
+    ok=json.success;
   }catch(e){}
 
   document.getElementById('doneIco').textContent='✓';
