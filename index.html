@@ -420,7 +420,13 @@ async function doSubmit(){
   });
 
   var ok=false;
-  try{var r=await fetch('https://formspree.io/f/xgoqwrja',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});ok=r.ok;}catch(e){}
+  try{
+    // Use FormData for Formspree free plan compatibility
+    var fd=new FormData();
+    Object.keys(payload).forEach(function(k){fd.append(k,payload[k]);});
+    var r=await fetch('https://formspree.io/f/xgoqwrja',{method:'POST',headers:{'Accept':'application/json'},body:fd});
+    ok=r.ok;
+  }catch(e){}
 
   document.getElementById('doneIco').textContent='✓';
   document.getElementById('doneH').textContent='Assessment Submitted';
