@@ -278,7 +278,7 @@ function render(){
     else if(q.t==='hike')h+=rHike(q);
     else if(q.t==='mchk')h+=rMchk(q);
     else if(q.t==='rank')h+=rRank(q);
-    h+='<div class="nav"><button class="btn-g" onclick="gp()">← Back</button><button class="btn-p" onclick="gn()">'+(last?'Submit Assessment →':'Next →')+'</button></div>';
+    h+='<div id="qErr" style="display:none;color:#C05050;font-size:12px;font-family:sans-serif;margin-top:16px;padding:10px 14px;background:#FEF2F2;border:1px solid #FCA5A5;"></div>';h+='<div class="nav"><button class="btn-g" onclick="gp()">← Back</button><button class="btn-p" onclick="gn()">'+(last?'Submit Assessment →':'Next →')+'</button></div>';
     c.innerHTML=h;
   }
 }
@@ -293,7 +293,22 @@ function rScale(q){
   for(var v=1;v<=10;v++)h+='<button class="sc-btn'+(a===v?' sel':'')+'" onclick="pScale(\''+q.id+'\','+v+',this)">'+v+'</button>';
   return h+'</div>';
 }
-function rOpen(q){var a=ans[q.id]||'';return '<textarea class="oa" id="oa_'+q.id+'" placeholder="Write your response here..." onchange="ans[\''+q.id+'\']=this.value" oninput="ans[\''+q.id+'\']=this.value">'+escHtml(a)+'</textarea>';}
+function rOpen(q){
+  var a=ans[q.id]||'';
+  var cnt=a.trim().length;
+  var col=cnt>=100?'#7A9A6A':'#C05050';
+  var counter='<div id="ctr_'+q.id+'" style="font-size:11px;font-family:sans-serif;margin-top:6px;color:'+col+'">'+(cnt>=100?'✓ '+cnt+' characters':cnt+' / 100 minimum')+'</div>';
+  return '<textarea class="oa" id="oa_'+q.id+'" placeholder="Write your response here..." onchange="ans[\''+q.id+'\']=this.value;updCtr(\''+q.id+'\')" oninput="ans[\''+q.id+'\']=this.value;updCtr(\''+q.id+'\')">'+escHtml(a)+'</textarea>'+counter;
+}
+function updCtr(id){
+  var t=document.getElementById('oa_'+id);
+  var d=document.getElementById('ctr_'+id);
+  if(!t||!d)return;
+  var n=t.value.trim().length;
+  if(n>=100){d.style.color='#7A9A6A';d.textContent='✓ '+n+' characters';}
+  else{d.style.color='#C05050';d.textContent=n+' / 100 minimum';}
+  clearErr();
+}
 function rHike(q){
   var a=ans[q.id]||{},h='<div class="hike-grid">';
   q.ho.forEach(function(ho,i){h+='<div class="hike-c'+(a.pick===i?' sel':'')+'" onclick="pHike(\''+q.id+'\','+i+')"><span class="hike-chk">✓</span><span class="hike-p">'+ho.l+'</span><span class="hike-d">'+ho.d+'</span></div>';});
@@ -321,17 +336,56 @@ function rRank(q){
 function pMCQ(id,idx,el){ans[id]=idx;el.closest('.opts').querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');}
 function pScale(id,v,el){ans[id]=v;el.closest('.sc-btns').querySelectorAll('.sc-btn').forEach(function(b){b.classList.remove('sel');});el.classList.add('sel');}
 function pHike(id,i){var n=(ans[id]||{}).note||'';ans[id]={pick:i,note:n};document.querySelectorAll('.hike-c').forEach(function(c,j){c.classList.toggle('sel',j===i);});}
-function uHNote(id){var t=document.getElementById('hn_'+id);if(t){var c=ans[id]||{};ans[id]={pick:c.pick,note:t.value};}}
+function uHNote(id){
+  var t=document.getElementById('hn_'+id);
+  if(!t)return;
+  var c=ans[id]||{};ans[id]={pick:c.pick,note:t.value};
+  var d=document.getElementById('ctr_hn_'+id);
+  if(d){var n=t.value.trim().length;if(n>=100){d.style.color='#7A9A6A';d.textContent='✓ '+n+' characters';}else{d.style.color='#C05050';d.textContent=n+' / 100 minimum';}}
+  clearErr();
+}
 function tMchk(id,i,el){var a=ans[id]||[];var p=a.indexOf(i);if(p>-1){a.splice(p,1);el.classList.remove('sel');el.querySelector('.mc-box').textContent='';}else{a.push(i);el.classList.add('sel');el.querySelector('.mc-box').textContent='✓';}ans[id]=a;}
 function mRank(id,i,d){var a=ans[id]||S[si].q.filter(function(q){return q.id===id;})[0].items.slice();var j=i+d;if(j<0||j>=a.length)return;var tmp=a[i];a[i]=a[j];a[j]=tmp;ans[id]=a;render();}
 
 function gn(){
   var sec=S[si];
   if(ph==='section'){ph='question';render();return;}
+  // Validate current question
+  var q=sec.q[qi];
+  if(!validateQ(q))return;
   if(qi<sec.q.length-1)qi++;
   else if(si<S.length-1){si++;qi=0;ph='section';}
   else{doSubmit();return;}
   window.scrollTo(0,0);render();
+}
+
+function validateQ(q){
+  var a=ans[q.id];
+  var err='';
+  if(q.t==='mcq'){if(a===undefined||a===null){err='Please select an option to continue.';}}
+  else if(q.t==='scale'){if(!a){err='Please select a value to continue.';}}
+  else if(q.t==='open'){
+    var v=(a||'').trim();
+    if(v.length===0){err='This question requires a written response.';}
+    else if(v.length<100){err='Please write at least 100 characters ('+v.length+'/100 so far).';}
+  }
+  else if(q.t==='hike'){
+    if(a===undefined||a===null||a.pick===undefined){err='Please select an increment band to continue.';}
+    else if(!a.note||a.note.trim().length<100){err='Please add your justification (minimum 100 characters). Currently at '+((a.note||'').trim().length)+'/100.';}
+  }
+  else if(q.t==='mchk'){if(!a||a.length===0){err='Please select at least one option to continue.';}}
+  else if(q.t==='rank'){/* rank always has a value */}
+  if(err){showErr(err);return false;}
+  clearErr();return true;
+}
+
+function showErr(msg){
+  var e=document.getElementById('qErr');
+  if(e){e.textContent=msg;e.style.display='block';}
+}
+function clearErr(){
+  var e=document.getElementById('qErr');
+  if(e){e.textContent='';e.style.display='none';}
 }
 function gp(){
   if(ph==='section'){
