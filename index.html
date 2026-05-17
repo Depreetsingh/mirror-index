@@ -19,8 +19,7 @@ textarea,input{font-family:sans-serif}
 .c-title span{color:#8B6914}
 .c-sub{font-size:clamp(10px,1.5vw,12px);font-weight:600;color:#9A8268;letter-spacing:5px;text-transform:uppercase;font-family:sans-serif;margin-top:8px}
 .divider{display:flex;align-items:center;gap:12px;margin:24px auto;width:180px}
-.dl{flex:1;height:1px}
-.dd{color:rgba(120,100,75,0.4);font-size:8px}
+.dl{flex:1;height:1px}.dd{color:rgba(120,100,75,0.4);font-size:8px}
 .c-desc{font-size:12px;color:#A09080;max-width:320px;line-height:2;margin-bottom:28px;font-family:sans-serif}
 .stats{display:flex;border:1px solid rgba(120,100,75,0.15);background:rgba(255,255,255,0.55);margin-bottom:30px}
 .stat{text-align:center;padding:16px 28px}
@@ -93,13 +92,14 @@ textarea,input{font-family:sans-serif}
 .btn-g:hover{border-color:#8B6914;color:#7A6048}
 .btn-p{padding:11px 26px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:#7A6048;border:1px solid #7A6048;color:#FEFCF9}
 .btn-p:hover{background:#5C4836}
-#admin{display:none;min-height:100vh;align-items:center;justify-content:center;padding:40px;background:#F9F3EB}
+.q-err{display:none;color:#C05050;font-size:12px;font-family:sans-serif;margin-top:16px;padding:10px 14px;background:#FEF2F2;border:1px solid #FCA5A5}
+#admin{display:none;min-height:100vh;background:#F8F5F1;font-family:sans-serif}
 .adm-box{border:1px solid #E8E0D8;padding:32px 40px;background:#fff;max-width:360px;width:100%;text-align:center}
-.adm-lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9A8070;margin-bottom:20px;font-family:sans-serif}
-.adm-desc{font-size:13px;color:#6A5A4A;line-height:1.8;margin-bottom:24px;font-family:sans-serif}
+.adm-lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9A8070;margin-bottom:20px}
+.adm-desc{font-size:13px;color:#6A5A4A;line-height:1.8;margin-bottom:24px}
 .pin-in{width:100%;border:1px solid #E8E0D8;padding:10px 14px;font-size:20px;text-align:center;outline:none;letter-spacing:8px;margin-bottom:6px}
 .pin-in:focus{border-color:#8B6914}
-.pin-err{font-size:11px;color:#C05050;min-height:16px;margin-bottom:6px;font-family:sans-serif}
+.pin-err{font-size:11px;color:#C05050;min-height:16px;margin-bottom:6px}
 .adm-row{display:flex;gap:10px;margin-top:12px}
 #done{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;background:linear-gradient(160deg,#FEFCF9 0%,#F9F3EB 40%,#F3EAE0 75%,#EDE2D5 100%)}
 .done-icon{width:60px;height:60px;border:1px solid rgba(120,100,75,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:24px;color:#7A6048}
@@ -111,7 +111,7 @@ textarea,input{font-family:sans-serif}
 </head>
 <body>
 
-<div id="cover">
+<div id="cover" style="display:flex">
   <div class="c-ring" style="width:600px;height:600px;border:1px solid rgba(120,100,75,0.06)"></div>
   <div class="c-ring" style="width:850px;height:850px;border:1px solid rgba(120,100,75,0.03)"></div>
   <div class="corner" style="top:28px;left:28px;border-top:1px solid rgba(120,100,75,0.2);border-left:1px solid rgba(120,100,75,0.2)"></div>
@@ -138,7 +138,7 @@ textarea,input{font-family:sans-serif}
   <p class="share-hint">Send this file via email or WhatsApp · Opens in any browser</p>
 </div>
 
-<div id="app">
+<div id="app" style="display:none">
   <div class="topbar">
     <span class="tb-title">The Mirror Index</span>
     <div class="tb-right">
@@ -157,7 +157,7 @@ textarea,input{font-family:sans-serif}
   <div class="inner" id="content"></div>
 </div>
 
-<div id="admin" style="display:none;min-height:100vh;background:#F8F5F1;font-family:sans-serif">
+<div id="admin" style="display:none">
   <div id="adm-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px">
     <div class="adm-box">
       <div class="adm-lbl">Admin Access</div>
@@ -174,7 +174,7 @@ textarea,input{font-family:sans-serif}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px">
       <div>
         <h2 style="font-size:22px;font-weight:600;color:#2A1E12;font-family:Georgia,serif">Mirror Index — Admin Panel</h2>
-        <p style="font-size:12px;color:#9A8070;margin-top:4px" id="subCount">Loading submissions...</p>
+        <p style="font-size:12px;color:#9A8070;margin-top:4px" id="subCount"></p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button onclick="exportCSV()" style="padding:9px 18px;background:#7A6048;color:#fff;border:none;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer">Export CSV</button>
@@ -186,11 +186,11 @@ textarea,input{font-family:sans-serif}
   </div>
 </div>
 
-<div id="done">
-  <div class="done-icon" id="doneIco">✓</div>
-  <h2 class="done-h" id="doneH">Assessment Submitted</h2>
-  <p class="done-p" id="doneP">Your responses have been recorded. The review team will be in touch shortly.</p>
-  <div class="done-box" id="doneB">Your responses have been saved. Thank you for completing The Mirror Index.</div>
+<div id="done" style="display:none">
+  <div class="done-icon">✓</div>
+  <h2 class="done-h">Assessment Submitted</h2>
+  <p class="done-p">Your responses have been recorded. The review team will be in touch shortly.</p>
+  <div class="done-box">Your responses have been saved. Thank you for completing The Mirror Index.</div>
 </div>
 
 <script>
@@ -257,21 +257,6 @@ var S=[
 
 var totalQ=0;S.forEach(function(s){totalQ+=s.q.length;});
 
-function startAssessment(){
-  document.getElementById('cover').style.display='none';
-  document.getElementById('app').style.display='block';
-  si=0;qi=0;ph='section';ans={};sl=T;
-  updateClock();
-  ti=setInterval(function(){sl--;updateClock();if(sl<=0){clearInterval(ti);doSubmit();}},1000);
-  render();
-}
-
-function updateClock(){
-  var m=Math.floor(sl/60).toString().padStart(2,'0'),s=(sl%60).toString().padStart(2,'0');
-  var lbl=document.getElementById('clkLbl'),ring=document.getElementById('ring');
-  if(lbl){lbl.textContent=m+':'+s;lbl.className='clk-lbl'+(sl<300?' red':'');}
-  if(ring){ring.style.strokeDashoffset=69.12*(1-sl/T);ring.setAttribute('stroke',sl<300?'#D97070':'#8B6914');}
-}
 
 function qNum(){var n=0;for(var i=0;i<si;i++)n+=S[i].q.length;return n+(ph==='question'?qi+1:0);}
 
@@ -544,6 +529,160 @@ function exportCSV(){
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;a.download='mirror_index_submissions.csv';a.click();
   URL.revokeObjectURL(url);
+}
+function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+var totalQ=0;S.forEach(function(s){totalQ+=s.q.length;});
+
+function show(id){['cover','app','admin','done'].forEach(function(x){var el=document.getElementById(x);if(el)el.style.display='none';});var el=document.getElementById(id);if(el)el.style.display=id==='cover'?'flex':id==='done'?'flex':'block';}
+
+function startAssessment(){si=0;qi=0;ph='section';ans={};sl=T;updateClock();show('app');ti=setInterval(function(){sl--;updateClock();if(sl<=0){clearInterval(ti);doSubmit();}},1000);render();}
+
+function updateClock(){var m=Math.floor(sl/60).toString().padStart(2,'0'),s=(sl%60).toString().padStart(2,'0');var lbl=document.getElementById('clkLbl'),ring=document.getElementById('ring');if(lbl){lbl.textContent=m+':'+s;lbl.className='clk-lbl'+(sl<300?' red':'');}if(ring){ring.style.strokeDashoffset=69.12*(1-sl/T);ring.setAttribute('stroke',sl<300?'#D97070':'#8B6914');}}
+
+function qNum(){var n=0;for(var i=0;i<si;i++)n+=S[i].q.length;return n+(ph==='question'?qi+1:0);}
+
+function render(){
+  var qn=qNum(),pr=Math.round((qn>0?qn-1:0)/totalQ*100);
+  document.getElementById('prog').style.width=pr+'%';
+  document.getElementById('qCtr').textContent=(qn||1)+' / '+totalQ;
+  var sec=S[si],c=document.getElementById('content');
+  if(ph==='section'){
+    c.innerHTML='<div class="sec-tag">'+sec.tag+'</div><h2 class="sec-h">'+sec.h+'</h2><p class="sec-d">'+sec.d+'</p>'+
+      '<div class="nav">'+(si>0?'<button class="btn-g" onclick="gp()">← Back</button>':'<span></span>')+
+      '<button class="btn-p" onclick="gn()">Begin Section →</button></div>';
+  } else {
+    var q=sec.q[qi],last=si===S.length-1&&qi===sec.q.length-1;
+    var h='<div class="q-lbl">'+sec.tag+' · Q'+(qi+1)+'</div><p class="q-txt">'+q.tx+'</p>';
+    if(q.sb)h+='<p class="q-sub">'+q.sb+'</p>';
+    if(q.t==='mcq')h+=rMCQ(q);
+    else if(q.t==='scale')h+=rScale(q);
+    else if(q.t==='open')h+=rOpen(q);
+    else if(q.t==='hike')h+=rHike(q);
+    else if(q.t==='mchk')h+=rMchk(q);
+    else if(q.t==='rank')h+=rRank(q);
+    h+='<div class="q-err" id="qErr"></div>';
+    h+='<div class="nav"><button class="btn-g" onclick="gp()">← Back</button><button class="btn-p" onclick="gn()">'+(last?'Submit Assessment →':'Next →')+'</button></div>';
+    c.innerHTML=h;
+  }
+}
+
+function rMCQ(q){var a=ans[q.id],h='<div class="opts">';q.o.forEach(function(o,i){h+='<div class="opt'+(a===i?' sel':'')+'" onclick="pMCQ(\''+q.id+'\','+i+',this)"><span class="opt-l">'+String.fromCharCode(65+i)+'</span><span class="opt-t">'+o+'</span></div>';});return h+'</div>';}
+function rScale(q){var a=ans[q.id],h='<div class="sc-lbl"><span>Low</span><span>High</span></div><div class="sc-btns">';for(var v=1;v<=10;v++)h+='<button class="sc-btn'+(a===v?' sel':'')+'" onclick="pScale(\''+q.id+'\','+v+',this)">'+v+'</button>';return h+'</div>';}
+function rOpen(q){
+  var a=ans[q.id]||'',cnt=a.trim().length,col=cnt>=100?'#7A9A6A':'#C05050';
+  return '<textarea class="oa" id="oa_'+q.id+'" placeholder="Write your response here..." onchange="ans[\''+q.id+'\']=this.value;updCtr(\''+q.id+'\')" oninput="ans[\''+q.id+'\']=this.value;updCtr(\''+q.id+'\')">'+escHtml(a)+'</textarea>'+
+    '<div id="ctr_'+q.id+'" style="font-size:11px;font-family:sans-serif;margin-top:6px;color:'+col+'">'+(cnt>=100?'✓ '+cnt+' characters':cnt+' / 100 minimum')+'</div>';
+}
+function updCtr(id){var t=document.getElementById('oa_'+id),d=document.getElementById('ctr_'+id);if(!t||!d)return;var n=t.value.trim().length;if(n>=100){d.style.color='#7A9A6A';d.textContent='✓ '+n+' characters';}else{d.style.color='#C05050';d.textContent=n+' / 100 minimum';}clearErr();}
+function rHike(q){
+  var a=ans[q.id]||{},h='<div class="hike-grid">';
+  q.ho.forEach(function(ho,i){h+='<div class="hike-c'+(a.pick===i?' sel':'')+'" onclick="pHike(\''+q.id+'\','+i+')"><span class="hike-chk">✓</span><span class="hike-p">'+ho.l+'</span><span class="hike-d">'+ho.d+'</span></div>';});
+  var hn=a.note||'',hcnt=hn.trim().length,hcol=hcnt>=100?'#7A9A6A':'#C05050';
+  h+='</div><p class="hike-rl">In your own words, what specifically justifies this expectation?</p>';
+  h+='<textarea class="oa" id="hn_'+q.id+'" placeholder="Be specific — outcomes, impact, context..." style="min-height:90px" onchange="uHNote(\''+q.id+'\')" oninput="uHNote(\''+q.id+'\')">'+hn+'</textarea>';
+  h+='<div id="ctr_hn_'+q.id+'" style="font-size:11px;font-family:sans-serif;margin-top:6px;color:'+hcol+'">'+(hcnt>=100?'✓ '+hcnt+' characters':hcnt+' / 100 minimum')+'</div>';
+  return h;
+}
+function rMchk(q){var a=ans[q.id]||[],h='<p class="mc-hint">Select all that apply</p><div class="mc-list">';q.o.forEach(function(o,i){var s=a.indexOf(i)>-1;h+='<div class="mc-item'+(s?' sel':'')+'" onclick="tMchk(\''+q.id+'\','+i+',this)"><span class="mc-box">'+(s?'✓':'')+'</span><span class="mc-txt">'+o+'</span></div>';});return h+'</div>';}
+function rRank(q){var items=ans[q.id]||q.items.slice();if(!ans[q.id])ans[q.id]=items;var h='<p class="rk-hint">Use ↑↓ to reorder · #1 = most relevant to you</p><div class="rk-list">';items.forEach(function(item,i){h+='<div class="rk-item"><span class="rk-num">'+(i+1)+'</span><span class="rk-txt">'+item+'</span><div class="rk-arr"><button onclick="mRank(\''+q.id+'\','+i+',-1)"'+(i===0?' disabled':'')+'>↑</button><button onclick="mRank(\''+q.id+'\','+i+',1)"'+(i===q.items.length-1?' disabled':'')+'>↓</button></div></div>';});return h+'</div>';}
+
+function pMCQ(id,idx,el){ans[id]=idx;el.closest('.opts').querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');clearErr();}
+function pScale(id,v,el){ans[id]=v;el.closest('.sc-btns').querySelectorAll('.sc-btn').forEach(function(b){b.classList.remove('sel');});el.classList.add('sel');clearErr();}
+function pHike(id,i){var n=(ans[id]||{}).note||'';ans[id]={pick:i,note:n};document.querySelectorAll('.hike-c').forEach(function(c,j){c.classList.toggle('sel',j===i);});clearErr();}
+function uHNote(id){var t=document.getElementById('hn_'+id);if(!t)return;var c=ans[id]||{};ans[id]={pick:c.pick,note:t.value};var d=document.getElementById('ctr_hn_'+id);if(d){var n=t.value.trim().length;if(n>=100){d.style.color='#7A9A6A';d.textContent='✓ '+n+' characters';}else{d.style.color='#C05050';d.textContent=n+' / 100 minimum';}}clearErr();}
+function tMchk(id,i,el){var a=ans[id]||[];var p=a.indexOf(i);if(p>-1){a.splice(p,1);el.classList.remove('sel');el.querySelector('.mc-box').textContent='';}else{a.push(i);el.classList.add('sel');el.querySelector('.mc-box').textContent='✓';}ans[id]=a;clearErr();}
+function mRank(id,i,d){var a=ans[id]||S[si].q.filter(function(q){return q.id===id;})[0].items.slice();var j=i+d;if(j<0||j>=a.length)return;var tmp=a[i];a[i]=a[j];a[j]=tmp;ans[id]=a;render();}
+
+function showErr(msg){var e=document.getElementById('qErr');if(e){e.textContent=msg;e.style.display='block';e.scrollIntoView({behavior:'smooth',block:'nearest'});}}
+function clearErr(){var e=document.getElementById('qErr');if(e){e.textContent='';e.style.display='none';}}
+
+function validateQ(q){
+  var a=ans[q.id];
+  if(q.t==='mcq'){if(a===undefined||a===null){showErr('Please select an option to continue.');return false;}}
+  else if(q.t==='scale'){if(!a){showErr('Please select a value to continue.');return false;}}
+  else if(q.t==='open'){var v=(a||'').trim();if(v.length===0){showErr('This question requires a written response.');return false;}if(v.length<100){showErr('Please write at least 100 characters ('+v.length+'/100 so far).');return false;}}
+  else if(q.t==='hike'){if(!a||a.pick===undefined){showErr('Please select an increment band to continue.');return false;}if(!a.note||a.note.trim().length<100){showErr('Please justify your selection with at least 100 characters ('+(a.note?a.note.trim().length:0)+'/100).');return false;}}
+  else if(q.t==='mchk'){if(!a||a.length===0){showErr('Please select at least one option to continue.');return false;}}
+  return true;
+}
+
+function gn(){
+  var sec=S[si];
+  if(ph==='section'){ph='question';render();window.scrollTo(0,0);return;}
+  if(!validateQ(sec.q[qi]))return;
+  if(qi<sec.q.length-1)qi++;
+  else if(si<S.length-1){si++;qi=0;ph='section';}
+  else{doSubmit();return;}
+  window.scrollTo(0,0);render();
+}
+function gp(){
+  if(ph==='section'){if(si===0){clearInterval(ti);show('cover');return;}si--;qi=S[si].q.length-1;ph='question';}
+  else{if(qi>0)qi--;else ph='section';}
+  window.scrollTo(0,0);render();
+}
+
+function doSubmit(){
+  clearInterval(ti);
+  var record={id:'sub_'+Date.now(),submitted_at:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),responses:{}};
+  S.forEach(function(sec){sec.q.forEach(function(q){var a=ans[q.id];if(a===undefined||a===null||a==='')return;var d='';if(q.t==='mcq')d=q.o[a];else if(q.t==='scale')d=a+' / 10';else if(q.t==='hike')d=((q.ho[a.pick]?q.ho[a.pick].l:'—'))+(a.note?' — Reason: '+a.note:'');else if(q.t==='mchk')d=(a||[]).map(function(i){return q.o[i];}).join('; ')||'None selected';else if(q.t==='rank')d=(a||q.items).map(function(x,i){return(i+1)+'. '+x;}).join(' | ');else d=a;record.responses[sec.tag+'||'+q.tx]=d;});});
+  try{var ex=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');ex.push(record);localStorage.setItem('mirror_submissions',JSON.stringify(ex));}catch(e){}
+  show('done');
+}
+
+function showAdm(){
+  show('admin');
+  document.getElementById('adm-login').style.display='flex';
+  document.getElementById('adm-panel').style.display='none';
+  document.getElementById('pinIn').value='';
+  document.getElementById('pinErr').textContent='';
+}
+function hideAdm(){show('cover');}
+function tryPin(){
+  if(document.getElementById('pinIn').value===PIN){
+    document.getElementById('adm-login').style.display='none';
+    document.getElementById('adm-panel').style.display='block';
+    loadSubs();
+  }else{document.getElementById('pinErr').textContent='Incorrect PIN. Try again.';document.getElementById('pinIn').value='';}
+}
+function hardReset(){
+  if(!confirm('Reset the form? Submissions will NOT be deleted.'))return;
+  clearInterval(ti);ans={};si=0;qi=0;ph='cover';sl=T;updateClock();show('cover');
+}
+function loadSubs(){
+  var subs=[];try{subs=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');}catch(e){}
+  document.getElementById('subCount').textContent=subs.length+' submission'+(subs.length!==1?'s':'')+' recorded';
+  var el=document.getElementById('adm-subs');
+  if(subs.length===0){el.innerHTML='<div style="text-align:center;padding:60px;color:#9A8070;border:1px solid #E8E0D8;background:#fff"><p style="font-size:14px">No submissions yet.</p></div>';return;}
+  var html='';
+  subs.slice().reverse().forEach(function(sub,idx){
+    var realIdx=subs.length-1-idx;
+    html+='<div style="border:1px solid #E8E0D8;background:#fff;margin-bottom:20px;overflow:hidden">';
+    html+='<div style="background:#F5EDE3;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="togSub(\'s'+idx+'\')">';
+    html+='<div><span style="font-size:13px;font-weight:700;color:#2A1E12">Submission '+(subs.length-idx)+'</span><span style="font-size:11px;color:#9A8070;margin-left:12px">'+sub.submitted_at+'</span></div>';
+    html+='<span style="color:#8B6914;font-size:12px" id="arr'+idx+'">▼</span></div>';
+    html+='<div id="s'+idx+'" style="display:none">';
+    var grps={};
+    Object.keys(sub.responses||{}).forEach(function(key){var p=key.split('||');var sec=p[0];var q=p[1]||key;if(!grps[sec])grps[sec]=[];grps[sec].push({q:q,a:sub.responses[key]});});
+    Object.keys(grps).forEach(function(sec){
+      html+='<div style="padding:14px 20px;border-bottom:1px solid #F0E8E0"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8B6914;font-weight:700;margin-bottom:10px">'+sec+'</div>';
+      grps[sec].forEach(function(item){html+='<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #F5EDE3"><div style="font-size:12px;color:#9A8070;margin-bottom:4px;line-height:1.5">'+item.q.substring(0,100)+(item.q.length>100?'...':'')+'</div><div style="font-size:13px;color:#2A1E12;font-weight:500;line-height:1.5">'+item.a+'</div></div>';});
+      html+='</div>';
+    });
+    html+='<div style="padding:12px 20px;text-align:right"><button onclick="delSub('+realIdx+')" style="font-size:11px;color:#C05050;background:none;border:none;cursor:pointer">Delete this submission</button></div>';
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
+}
+function togSub(id){var el=document.getElementById(id),idx=id.replace('s',''),arr=document.getElementById('arr'+idx);if(el.style.display==='none'){el.style.display='block';if(arr)arr.textContent='▲';}else{el.style.display='none';if(arr)arr.textContent='▼';}}
+function delSub(idx){if(!confirm('Delete this submission permanently?'))return;var subs=[];try{subs=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');}catch(e){}subs.splice(idx,1);localStorage.setItem('mirror_submissions',JSON.stringify(subs));loadSubs();}
+function exportCSV(){
+  var subs=[];try{subs=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');}catch(e){}
+  if(subs.length===0){alert('No submissions to export.');return;}
+  var allKeys=[];subs.forEach(function(s){Object.keys(s.responses||{}).forEach(function(k){if(allKeys.indexOf(k)===-1)allKeys.push(k);});});
+  var rows=[['Submission','Submitted At'].concat(allKeys.map(function(k){return '"'+k.split('||')[1]+'"';}))];
+  subs.forEach(function(s,i){var row=[i+1,s.submitted_at].concat(allKeys.map(function(k){return '"'+((s.responses[k]||'').replace(/"/g,'""'))+'"';}));rows.push(row);});
+  var csv=rows.map(function(r){return r.join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='mirror_index_results.csv';a.click();URL.revokeObjectURL(url);
 }
 function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
