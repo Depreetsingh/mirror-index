@@ -157,16 +157,32 @@ textarea,input{font-family:sans-serif}
   <div class="inner" id="content"></div>
 </div>
 
-<div id="admin">
-  <div class="adm-box">
-    <div class="adm-lbl">Admin Access</div>
-    <p class="adm-desc">Enter your PIN to reset the assessment to the start screen.</p>
-    <input class="pin-in" id="pinIn" type="password" maxlength="6" placeholder="· · · ·" onkeydown="if(event.key==='Enter')tryPin()">
-    <div class="pin-err" id="pinErr"></div>
-    <div class="adm-row">
-      <button class="btn-g" style="flex:1" onclick="hideAdm()">Cancel</button>
-      <button class="btn-p" style="flex:1" onclick="tryPin()">Reset</button>
+<div id="admin" style="display:none;min-height:100vh;background:#F8F5F1;font-family:sans-serif">
+  <div id="adm-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px">
+    <div class="adm-box">
+      <div class="adm-lbl">Admin Access</div>
+      <p class="adm-desc">Enter your PIN to access the admin panel.</p>
+      <input class="pin-in" id="pinIn" type="password" maxlength="6" placeholder="· · · ·" onkeydown="if(event.key==='Enter')tryPin()">
+      <div class="pin-err" id="pinErr"></div>
+      <div class="adm-row">
+        <button class="btn-g" style="flex:1" onclick="hideAdm()">Cancel</button>
+        <button class="btn-p" style="flex:1" onclick="tryPin()">Enter</button>
+      </div>
     </div>
+  </div>
+  <div id="adm-panel" style="display:none;max-width:900px;margin:0 auto;padding:40px 20px 80px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="font-size:22px;font-weight:600;color:#2A1E12;font-family:Georgia,serif">Mirror Index — Admin Panel</h2>
+        <p style="font-size:12px;color:#9A8070;margin-top:4px" id="subCount">Loading submissions...</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onclick="exportCSV()" style="padding:9px 18px;background:#7A6048;color:#fff;border:none;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer">Export CSV</button>
+        <button onclick="hardReset()" style="padding:9px 18px;background:transparent;color:#9A8070;border:1px solid #D5C8B8;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer">Reset Form</button>
+        <button onclick="hideAdm()" style="padding:9px 18px;background:transparent;color:#9A8070;border:1px solid #D5C8B8;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer">Close</button>
+      </div>
+    </div>
+    <div id="adm-subs"></div>
   </div>
 </div>
 
@@ -174,7 +190,7 @@ textarea,input{font-family:sans-serif}
   <div class="done-icon" id="doneIco">✓</div>
   <h2 class="done-h" id="doneH">Assessment Submitted</h2>
   <p class="done-p" id="doneP">Your responses have been recorded. The review team will be in touch shortly.</p>
-  <div class="done-box" id="doneB">Results sent to the review team for your appraisal discussion.</div>
+  <div class="done-box" id="doneB">Your responses have been saved. Thank you for completing The Mirror Index.</div>
 </div>
 
 <script>
@@ -395,16 +411,11 @@ function gp(){
   window.scrollTo(0,0);render();
 }
 
-async function doSubmit(){
+function doSubmit(){
   clearInterval(ti);
-  document.getElementById('app').style.display='none';
-  var done=document.getElementById('done');done.style.display='flex';
-  document.getElementById('doneIco').textContent='⏳';
-  document.getElementById('doneH').textContent='Submitting your responses…';
-  document.getElementById('doneP').textContent='Please wait while your responses are being sent.';
-  document.getElementById('doneB').style.display='none';
 
-  var payload={_subject:'[Mirror Index] Submission — '+new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),submitted_at:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})};
+  // Build full response record
+  var record={id:'sub_'+Date.now(),submitted_at:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),responses:{}};
   S.forEach(function(sec){
     sec.q.forEach(function(q){
       var a=ans[q.id];if(a===undefined||a===null||a==='')return;
@@ -415,43 +426,124 @@ async function doSubmit(){
       else if(q.t==='mchk')d=(a||[]).map(function(i){return q.o[i];}).join('; ')||'None selected';
       else if(q.t==='rank')d=(a||q.items).map(function(x,i){return(i+1)+'. '+x;}).join(' | ');
       else d=a;
-      payload['['+sec.tag+'] '+q.tx.substring(0,55)+'...']=d;
+      record.responses[sec.tag+'||'+q.tx]=d;
     });
   });
 
-  var ok=false;
+  // Save to localStorage
   try{
-    // Web3Forms - works from any domain, no restrictions
-    payload['access_key']='c8825401-e262-44b8-86e3-661bbb3655d9';
-    payload['subject']='[Mirror Index] Assessment Submitted';
-    payload['from_name']='Mirror Index';
-    var r=await fetch('https://api.web3forms.com/submit',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify(payload)
-    });
-    var json=await r.json();
-    ok=json.success;
+    var existing=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');
+    existing.push(record);
+    localStorage.setItem('mirror_submissions',JSON.stringify(existing));
   }catch(e){}
 
+  document.getElementById('app').style.display='none';
+  var done=document.getElementById('done');done.style.display='flex';
   document.getElementById('doneIco').textContent='✓';
   document.getElementById('doneH').textContent='Assessment Submitted';
   document.getElementById('doneP').textContent='Your responses have been recorded. The review team will be in touch shortly.';
   var b=document.getElementById('doneB');b.style.display='block';
-  b.textContent=ok?'Results sent to the review team for your appraisal discussion.':'Results could not be sent by email. Please inform your reviewer directly.';
+  b.textContent='Your responses have been saved. Thank you for completing The Mirror Index.';
 }
 
-function showAdm(){document.getElementById('app').style.display='none';var a=document.getElementById('admin');a.style.display='flex';document.getElementById('pinIn').value='';document.getElementById('pinErr').textContent='';}
-function hideAdm(){document.getElementById('admin').style.display='none';document.getElementById('app').style.display='block';}
+function showAdm(){
+  var prev=ph==='cover'?'cover':ph==='result'?'done':'app';
+  document.getElementById('cover').style.display='none';
+  document.getElementById('app').style.display='none';
+  document.getElementById('done').style.display='none';
+  document.getElementById('admin').style.display='block';
+  document.getElementById('adm-login').style.display='flex';
+  document.getElementById('adm-panel').style.display='none';
+  document.getElementById('pinIn').value='';
+  document.getElementById('pinErr').textContent='';
+}
+function hideAdm(){
+  document.getElementById('admin').style.display='none';
+  document.getElementById('adm-login').style.display='flex';
+  document.getElementById('adm-panel').style.display='none';
+  // Return to cover
+  document.getElementById('cover').style.display='flex';
+}
 function tryPin(){
   if(document.getElementById('pinIn').value===PIN){
-    clearInterval(ti);ans={};si=0;qi=0;ph='cover';sl=T;
-    document.getElementById('admin').style.display='none';
-    document.getElementById('app').style.display='none';
-    document.getElementById('done').style.display='none';
-    document.getElementById('cover').style.display='flex';
-    updateClock();
+    document.getElementById('adm-login').style.display='none';
+    document.getElementById('adm-panel').style.display='block';
+    loadSubmissions();
   }else{document.getElementById('pinErr').textContent='Incorrect PIN. Try again.';document.getElementById('pinIn').value='';}
+}
+function hardReset(){
+  if(!confirm('Reset the form? This will NOT delete saved submissions.'))return;
+  clearInterval(ti);ans={};si=0;qi=0;ph='cover';sl=T;
+  document.getElementById('admin').style.display='none';
+  document.getElementById('app').style.display='none';
+  document.getElementById('done').style.display='none';
+  document.getElementById('cover').style.display='flex';
+  updateClock();
+}
+function loadSubmissions(){
+  var subs=[];
+  try{subs=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');}catch(e){}
+  var el=document.getElementById('adm-subs');
+  var cnt=document.getElementById('subCount');
+  cnt.textContent=subs.length+' submission'+(subs.length!==1?'s':'')+' recorded';
+  if(subs.length===0){el.innerHTML='<div style="text-align:center;padding:60px 20px;color:#9A8070;border:1px solid #E8E0D8;background:#fff"><p style="font-size:14px">No submissions yet.</p></div>';return;}
+  var html='';
+  subs.slice().reverse().forEach(function(sub,idx){
+    html+='<div style="border:1px solid #E8E0D8;background:#fff;margin-bottom:20px;overflow:hidden">';
+    html+='<div style="background:#F5EDE3;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleSub('sub'+idx+'')">';
+    html+='<div><span style="font-size:13px;font-weight:700;color:#2A1E12">Submission '+(subs.length-idx)+'</span><span style="font-size:11px;color:#9A8070;margin-left:12px">'+sub.submitted_at+'</span></div>';
+    html+='<span style="color:#8B6914;font-size:12px" id="arr'+idx+'">▼</span></div>';
+    html+='<div id="sub'+idx+'" style="display:none;padding:0">';
+    var secGroups={};
+    Object.keys(sub.responses||{}).forEach(function(key){
+      var parts=key.split('||');var sec=parts[0];var q=parts[1]||key;
+      if(!secGroups[sec])secGroups[sec]=[];
+      secGroups[sec].push({q:q,a:sub.responses[key]});
+    });
+    Object.keys(secGroups).forEach(function(sec){
+      html+='<div style="padding:14px 20px;border-bottom:1px solid #F0E8E0"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8B6914;font-weight:700;margin-bottom:10px">'+sec+'</div>';
+      secGroups[sec].forEach(function(item){
+        html+='<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #F5EDE3">';
+        html+='<div style="font-size:12px;color:#9A8070;margin-bottom:4px;line-height:1.5">'+item.q.substring(0,100)+(item.q.length>100?'...':'')+'</div>';
+        html+='<div style="font-size:13px;color:#2A1E12;font-weight:500;line-height:1.5">'+item.a+'</div></div>';
+      });
+      html+='</div>';
+    });
+    html+='<div style="padding:12px 20px;text-align:right"><button onclick="deleteSub('+( subs.length-1-idx)+')" style="font-size:11px;color:#C05050;background:none;border:none;cursor:pointer;font-family:sans-serif">Delete this submission</button></div>';
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
+}
+function toggleSub(id){
+  var el=document.getElementById(id);
+  var idx=id.replace('sub','');
+  var arr=document.getElementById('arr'+idx);
+  if(el.style.display==='none'){el.style.display='block';if(arr)arr.textContent='▲';}
+  else{el.style.display='none';if(arr)arr.textContent='▼';}
+}
+function deleteSub(idx){
+  if(!confirm('Delete this submission permanently?'))return;
+  var subs=[];try{subs=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');}catch(e){}
+  subs.splice(idx,1);
+  localStorage.setItem('mirror_submissions',JSON.stringify(subs));
+  loadSubmissions();
+}
+function exportCSV(){
+  var subs=[];try{subs=JSON.parse(localStorage.getItem('mirror_submissions')||'[]');}catch(e){}
+  if(subs.length===0){alert('No submissions to export.');return;}
+  // Collect all unique question keys
+  var allKeys=[];
+  subs.forEach(function(s){Object.keys(s.responses||{}).forEach(function(k){if(allKeys.indexOf(k)===-1)allKeys.push(k);});});
+  var rows=[['Submission','Submitted At'].concat(allKeys.map(function(k){return '"'+k.split('||')[1]+'"';}))];
+  subs.forEach(function(s,i){
+    var row=[i+1,s.submitted_at].concat(allKeys.map(function(k){return '"'+((s.responses[k]||'').replace(/"/g,'""'))+'"';}));
+    rows.push(row);
+  });
+  var csv=rows.map(function(r){return r.join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='mirror_index_submissions.csv';a.click();
+  URL.revokeObjectURL(url);
 }
 function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
