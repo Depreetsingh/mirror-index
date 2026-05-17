@@ -164,10 +164,16 @@ textarea,input{font-family:sans-serif}
   <h2 class="done-h">Assessment Submitted</h2>
   <p class="done-p">Your responses have been recorded. The review team will be in touch shortly.</p>
   <div class="done-box">Thank you for completing The Mirror Index.</div>
+  <button onclick="showAdm()" style="margin-top:28px;background:none;border:none;color:rgba(120,100,75,0.2);font-size:10px;font-family:sans-serif;cursor:pointer;letter-spacing:2px;text-transform:uppercase">Admin</button>
 </div>
 
 <script>
 var PIN="8899",T=2400,ti=null,sl=T,ans={},si=0,qi=0,ph="cover";
+
+// Allow direct admin access via URL hash #admin
+window.addEventListener('load',function(){
+  if(window.location.hash==='#admin') showAdm();
+});
 var S=[
   {tag:"Section A — Business Impact",h:"Outcomes & Accountability",d:"This section asks you to connect your decisions directly to business results — clients won, projects lost, and KPIs met or missed.",q:[
     {id:"b1",t:"mcq",tx:"Think about any projects, mandates, or clients your team lost this year — retainers cancelled, pitches not won, scope significantly reduced. What is your most honest assessment of your team's contribution to those losses?",o:["KPI underperformance from my team was a direct factor — I take full ownership of that","External factors dominated, but there were things within my control I could have done differently","The losses were largely market-driven — pricing, budget freezes, or competitive displacement","I haven't mapped losses specifically to my team's output yet — that's an exercise I should do"]},
@@ -511,7 +517,7 @@ function gp(){
 function doSubmit(){
   clearInterval(ti);
   var record={
-    id:'sub_'+Date.now(),
+    id:'sub_'+Date.now()+'_'+Math.random().toString(36).substr(2,9),
     submitted_at:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),
     responses:{}
   };
@@ -537,7 +543,13 @@ function doSubmit(){
   show('done');
 }
 
+var admFrom='cover'; // tracks where admin was opened from
+
 function showAdm(){
+  // Save current screen so we can return
+  if(document.getElementById('app').style.display!=='none') admFrom='app';
+  else if(document.getElementById('done').style.display!=='none') admFrom='done';
+  else admFrom='cover';
   show('admin');
   document.getElementById('adm-login').style.display='flex';
   document.getElementById('adm-panel').style.display='none';
@@ -546,7 +558,9 @@ function showAdm(){
 }
 
 function hideAdm(){
-  show('cover');
+  // Return to wherever user was before opening admin
+  show(admFrom);
+  if(admFrom==='app') render(); // re-render current question
 }
 
 function tryPin(){
