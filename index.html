@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Mirror Index</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- v5 -->
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Georgia,'Times New Roman',serif;background:#F8F5F1;color:#2A1E12}
@@ -93,8 +97,8 @@ textarea,input{font-family:sans-serif}
   <div class="corner" style="bottom:28px;right:28px;border-bottom:1px solid rgba(120,100,75,0.2);border-right:1px solid rgba(120,100,75,0.2)"></div>
   <div class="logo">88G</div>
   <div class="eyebrow">Confidential · Annual Review</div>
-  <h1 class="c-title">The Mirror <span>Index</span></h1>
-  <p class="c-sub">A Reflection Exercise for Leaders</p>
+  <h1 class="c-title">Hey, Kuldeep <span>Kamboj</span></h1>
+  <p class="c-sub">The Mirror Index · Leadership Reflection</p>
   <div class="divider">
     <div class="dl" style="background:linear-gradient(90deg,transparent,rgba(120,100,75,0.25))"></div>
     <span class="dd">◆</span>
@@ -104,9 +108,9 @@ textarea,input{font-family:sans-serif}
   <div class="stats">
     <div class="stat" style="border-right:1px solid rgba(120,100,75,0.12)"><span class="stat-n">9</span><span class="stat-l">Sections</span></div>
     <div class="stat" style="border-right:1px solid rgba(120,100,75,0.12)"><span class="stat-n">36</span><span class="stat-l">Questions</span></div>
-    <div class="stat"><span class="stat-n">40</span><span class="stat-l">Minutes</span></div>
+    <div class="stat"><span class="stat-n">50</span><span class="stat-l">Minutes</span></div>
   </div>
-  <div class="notice">This assessment is time-bound. Once you begin, a 40-minute countdown starts. Complete all sections in one sitting without external assistance.</div>
+  <div class="notice">This assessment is time-bound. Once you begin, a 50-minute countdown starts. Complete all sections in one sitting without external assistance.</div>
   <button class="btn-start" onclick="startAssessment()">BEGIN ASSESSMENT</button>
   <p class="share-hint">Send this URL or file · Opens in any browser</p>
 </div>
@@ -121,7 +125,7 @@ textarea,input{font-family:sans-serif}
           <circle cx="14" cy="14" r="11" fill="none" stroke="#EDE6DC" stroke-width="2.5"/>
           <circle id="ring" cx="14" cy="14" r="11" fill="none" stroke="#8B6914" stroke-width="2.5" stroke-dasharray="69.12" stroke-dashoffset="0" style="transition:stroke-dashoffset 1s linear,stroke 0.5s"/>
         </svg>
-        <span class="clk-lbl" id="clkLbl">40:00</span>
+        <span class="clk-lbl" id="clkLbl">50:00</span>
       </div>
       <button class="adm-btn" onclick="showAdm()">&#8635;</button>
     </div>
@@ -168,7 +172,7 @@ textarea,input{font-family:sans-serif}
 </div>
 
 <script>
-var PIN="8899",T=2400,ti=null,sl=T,ans={},si=0,qi=0,ph="cover";
+var PIN="8899",T=3000,ti=null,sl=T,ans={},si=0,qi=0,ph="cover";
 
 // Allow direct admin access via URL hash #admin
 window.addEventListener('load',function(){
@@ -576,9 +580,14 @@ function tryPin(){
 
 function hardReset(){
   if(!confirm('Reset the form to start screen? Saved submissions will NOT be deleted.')) return;
-  clearInterval(ti);ans={};si=0;qi=0;ph='cover';sl=T;
+  clearInterval(ti);
+  ans={};si=0;qi=0;ph='cover';sl=T;
   updateClock();
-  show('cover');
+  // Hide all screens explicitly
+  document.getElementById('admin').style.display='none';
+  document.getElementById('app').style.display='none';
+  document.getElementById('done').style.display='none';
+  document.getElementById('cover').style.display='flex';
 }
 
 function loadSubs(){
@@ -655,17 +664,28 @@ function exportCSV(){
   });
   var rows=[['#','Submitted At'].concat(allKeys.map(function(k){return '"'+k.split('||')[1]+'"';}))];
   subs.forEach(function(s,i){
-    var row=[i+1,s.submitted_at].concat(allKeys.map(function(k){
-      return '"'+((s.responses[k]||'').toString().replace(/"/g,'""'))+'"';
+    var row=[i+1,'"'+s.submitted_at+'"'].concat(allKeys.map(function(k){
+      var val=(s.responses[k]||'').toString();
+      // Prefix with tab to prevent Excel auto-formatting dates/numbers
+      var safe='	'+val.replace(/"/g,'""');
+      return '"'+safe+'"';
     }));
     rows.push(row);
   });
   var csv=rows.map(function(r){return r.join(',');}).join('\n');
-  var blob=new Blob([csv],{type:'text/csv'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url; a.download='mirror_index_results.csv'; a.click();
-  URL.revokeObjectURL(url);
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  if(navigator.msSaveBlob){
+    navigator.msSaveBlob(blob,'mirror_index_results.csv');
+  } else {
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.style.display='none';
+    a.href=url;
+    a.setAttribute('download','mirror_index_results.csv');
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+  }
 }
 
 function escH(t){
