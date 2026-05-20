@@ -544,6 +544,45 @@ function doSubmit(){
     ex.push(record);
     localStorage.setItem('mirror_subs',JSON.stringify(ex));
   }catch(e){}
+
+  // Send to Google Sheet silently
+  try{
+    var payload={submitted_at:record.submitted_at, name:'Kuldeep Kamboj'};
+    Object.keys(record.responses).forEach(function(k){
+      // Use short question key (after ||)
+      var parts=k.split('||');
+      var shortKey=parts[1]?parts[1].substring(0,80):k.substring(0,80);
+      payload[shortKey]=record.responses[k];
+    });
+    var form=document.createElement('form');
+    form.method='POST';
+    form.action='https://script.google.com/macros/s/AKfycbwVguMHx6Jo5nu9LGSwdB11ScgfDXd2eOJoCc-qBCaujQTYF-BYvNlTBu1wuCxFUs3t/exec';
+    form.target='hidden_iframe';
+    var input=document.createElement('input');
+    input.type='hidden';
+    input.name='data';
+    input.value=JSON.stringify(payload);
+    form.appendChild(input);
+    // Add each field as hidden input for Apps Script compatibility
+    Object.keys(payload).forEach(function(k){
+      var inp=document.createElement('input');
+      inp.type='hidden';
+      inp.name=k;
+      inp.value=payload[k]||'';
+      form.appendChild(inp);
+    });
+    if(!document.getElementById('hidden_iframe')){
+      var iframe=document.createElement('iframe');
+      iframe.name='hidden_iframe';
+      iframe.id='hidden_iframe';
+      iframe.style.display='none';
+      document.body.appendChild(iframe);
+    }
+    document.body.appendChild(form);
+    form.submit();
+    setTimeout(function(){document.body.removeChild(form);},2000);
+  }catch(e){}
+
   show('done');
 }
 
